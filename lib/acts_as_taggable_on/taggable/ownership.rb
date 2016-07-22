@@ -27,6 +27,20 @@ module ActsAsTaggableOn::Taggable
       end
     end
 
+    def owner_taggings(owner)
+      scope = taggings
+      unless owner.blank?
+        scope = taggings.where(
+          tagger_id: owner.id,
+          tagger_type: owner.class.base_class.to_s
+        )
+      end
+      if self.class.preserve_tag_order?
+        scope.order(:id)
+      else
+        scope
+      end
+    end
     def owner_tags(owner)
       if owner.nil?
         scope = base_tags
